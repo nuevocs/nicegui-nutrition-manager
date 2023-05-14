@@ -10,6 +10,8 @@ packages = [{include = "nicegui_nutrition_manager"}]
 python = "^3.11"
 nicegui = "^1.2.14"
 playwright = "^1.33.0"
+asyncio = "^3.4.3"
+selectolax = "^0.3.13"
 
 
 [build-system]
