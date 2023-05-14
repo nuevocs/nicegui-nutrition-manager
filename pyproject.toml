@@ -9,6 +9,7 @@ packages = [{include = "nicegui_nutrition_manager"}]
 [tool.poetry.dependencies]
 python = "^3.11"
 nicegui = "^1.2.14"
+playwright = "^1.33.0"
 
 
 [build-system]
