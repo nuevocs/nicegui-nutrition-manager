@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "nicegui-nutrition-manager"
+version = "0.1.0"
+description = ""
+authors = ["Tatsuya Tomita <tat@seriousexplosion.net>"]
+readme = "README.md"
+packages = [{include = "nicegui_nutrition_manager"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
