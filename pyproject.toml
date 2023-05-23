@@ -12,6 +12,8 @@ nicegui = "^1.2.14"
 playwright = "^1.33.0"
 asyncio = "^3.4.3"
 selectolax = "^0.3.13"
+supabase = "^1.0.3"
+python-dotenv = "^1.0.0"
 
 
 [build-system]
