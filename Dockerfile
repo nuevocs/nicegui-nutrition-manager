@@ -5,8 +5,9 @@ LABEL maintainer="Tat <tat@seriousexplosion.net>"
 
 RUN python -m pip install nicegui
 
+WORKDIR /
 #WORKDIR /app
-WORKDIR /nicegui_nutrition_manager/app
+#WORKDIR /nicegui_nutrition_manager/app
 
 # Furthermore dependencies
 #COPY ./requirements.txt /requirements.txt
@@ -32,7 +33,7 @@ RUN curl -sSL https://install.python-poetry.org/ | python -
 # packages install
 #COPY pyproject.toml /app/pyproject.toml
 RUN poetry install
-RUN #poetry install --only main
+# RUN #poetry install --only main
 RUN poetry run playwright install
 
 EXPOSE 8080
