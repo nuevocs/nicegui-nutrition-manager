@@ -8,7 +8,7 @@ RUN python -m pip install nicegui
 #WORKDIR /
 WORKDIR /app
 #WORKDIR /nicegui_nutrition_manager/app
-
+COPY nicegui_nutrition_manager /app/nicegui_nutrition_manager
 # Furthermore dependencies
 #COPY ./requirements.txt /requirements.txt
 #RUN pip install -r /requirements.txt
@@ -29,7 +29,7 @@ RUN apt-get update && \
     apt-get clean
 
 RUN curl -sSL https://install.python-poetry.org/ | python -
-RUN ls
+RUN ls /app
 # packages install
 COPY pyproject.toml /app/pyproject.toml
 RUN poetry install
