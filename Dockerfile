@@ -29,7 +29,7 @@ RUN apt-get update && \
     apt-get clean
 
 RUN curl -sSL https://install.python-poetry.org/ | python -
-
+RUN ls
 # packages install
 #COPY pyproject.toml /app/pyproject.toml
 RUN poetry install
