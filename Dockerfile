@@ -31,10 +31,10 @@ RUN curl -sSL https://install.python-poetry.org/ | python -
 
 # packages install
 COPY pyproject.toml /pyproject.toml
-RUN poetry config virtualenvs.create false
+#RUN poetry config virtualenvs.create false
 RUN poetry install --no-root
 # RUN #poetry install --only main
-RUN poetry run playwright install
+RUN poetry run playwright install && playwright install-deps
 
 EXPOSE 8080
 
