@@ -5,12 +5,12 @@ LABEL maintainer="Tat <tat@seriousexplosion.net>"
 
 RUN python -m pip install nicegui
 
-WORKDIR /nicegui_nutrition_manager/app
+WORKDIR /app
+#WORKDIR /nicegui_nutrition_manager/app
 
 # Furthermore dependencies
 #COPY ./requirements.txt /requirements.txt
 #RUN pip install -r /requirements.txt
-
 
 ENV POETRY_HOME="/opt/poetry" \
     POETRY_VIRTUALENVS_CREATE=false \
@@ -29,13 +29,10 @@ RUN apt-get update && \
 
 RUN curl -sSL https://install.python-poetry.org/ | python -
 
-
 # packages install
 COPY pyproject.toml /app/pyproject.toml
 RUN poetry install --only main
 RUN poetry run playwright install
-
-
 
 EXPOSE 8080
 
