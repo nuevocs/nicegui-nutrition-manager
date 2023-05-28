@@ -14,6 +14,12 @@ def supabase_client() -> Client:
     return supabase
 
 
+def loading_collection(client, collection_name: str):
+    result = client.collection(collection_name).get_full_list()
+    record_lst = [record for record in result]
+    return record_lst
+
+
 def insert_as_dict_supabase(table_name: str, data: dataclass) -> dict:
     supabase = supabase_client()
     dct = asdict(data)
@@ -35,3 +41,7 @@ def select_filtered(table_name: str, cols: str, filter_col: str, filter_value: s
     data = supabase.table(table_name).select(cols).eq(filter_col, filter_value).execute()
     assert len(data.data) > 0
     return data.data
+
+
+
+

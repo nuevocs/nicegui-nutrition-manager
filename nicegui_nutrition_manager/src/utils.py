@@ -15,6 +15,17 @@ MENU_CATEGORY = {
 }
 
 DIMENSIONAL_PRODUCT_TABLE = "dim_nutrition_menu"
+FACT_PRODUCT_TABLE = "fct_nutrition_menu"
+
+collection_header = [
+    {"name": "nutrition_name", "label": "Name", "field": "menu_name"},
+    {"name": "nutrition_amount", "label": "Amount", "field": "quantity"},
+    {"name": "nutrition_amount", "label": "p", "field": "protein"},
+    {"name": "nutrition_amount", "label": "f", "field": "fat"},
+    {"name": "nutrition_amount", "label": "c", "field": "carb"},
+    {"name": "calories", "label": "Calories", "field": "calories", "required": True,
+     "sortable": True,
+     "align": "left"}]
 
 
 def calculating_calories(p: float, f: float, c: float) -> float:
@@ -33,3 +44,18 @@ def extract_float_numbers(input_string):
     if current_number != '':
         numbers.append(current_number)
     return numbers
+
+
+def pbase_col_options(result, col_name: str):
+    lst = []
+    for r in result:
+        dct = {
+            r.id: getattr(r, col_name)
+        }
+        lst.append(dct)
+    return lst
+
+
+def updating_dict_options(lst: list, index_column: str, column_name: str) -> dict:
+    dct = {item[index_column]: item[column_name] for item in lst}
+    return dct

@@ -14,3 +14,21 @@ class DimProduct:
     carbohydrate: float = 0
     calories: float = 0
     date: str = jst_no_tz.strftime('%Y-%m-%d')
+
+
+@dataclass
+class FctProduct:
+    menu_id: int
+    quantity: float
+    # menu_name: str
+    date: str = jst_no_tz.strftime('%Y-%m-%d')
+
+
+@dataclass
+class Collection:
+    menu_name: str
+    protein: str
+    fat: str
+    carb: str
+    calories: str
+    quantity: float

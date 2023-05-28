@@ -1,8 +1,11 @@
 from nicegui import ui
 from .playwright_scraping import get_search_result, get_nutrition_detail
-from .utils import extract_float_numbers, calculating_calories, MENU_CATEGORY, DIMENSIONAL_PRODUCT_TABLE
-from .db.schema_dtclass import DimProduct
-from .db.supabase_func import insert_as_dict_supabase
+from .utils import extract_float_numbers, calculating_calories, MENU_CATEGORY, DIMENSIONAL_PRODUCT_TABLE, \
+    updating_dict_options, collection_header, FACT_PRODUCT_TABLE
+from .db.schema_dtclass import DimProduct, FctProduct, Collection
+from .db.supabase_func import insert_as_dict_supabase, select_filtered
+
+from dataclasses import asdict
 
 SITE_TITLE = "Nutrition Manager"
 new_line = '\n'
@@ -95,7 +98,7 @@ class InputControl:
                 self.btn_save_to_db = ui.button("Save to DB", on_click=self.opening_dialog) \
                     .props('autofocus rounded item-aligned input-class="ml-3"') \
                     .classes('self-center transition-all')
-                self.btn_recalculate_calories = ui.button("Recalculate Calories", on_click=self.recalculated_calories)  \
+                self.btn_recalculate_calories = ui.button("Recalculate Calories", on_click=self.recalculated_calories) \
                     .props('autofocus rounded item-aligned input-class="ml-3"') \
                     .classes('self-center transition-all')
 
@@ -124,7 +127,7 @@ class InputControl:
         self.num_inp_serving_amount.value = food_detail.serving_amount
         self._set_pfc = (food_detail.protein, food_detail.fat, food_detail.carb, food_detail.serving_amount)
 
-        self.lbl_calories.text = f"Calories: {calculating_calories(self.num_inp_protein.value, self.num_inp_fat.value, self.num_inp_carb.value)}"
+        self.lbl_calories.text = f"Calories: {calculating_calories(self.num_inp_protein.value, self.num_inp_fat.value, self.num_inp_carb.value):.2f}"
         self.lbl_calories.update()
 
     def calculating_pfc_from_quantity(self):
@@ -156,7 +159,8 @@ class InputControl:
         self.num_inp_carb.value = self.manual_entry_num_inp_carb.value
 
         self._set_pfc = (
-        self.num_inp_protein.value, self.num_inp_fat.value, self.num_inp_carb.value, self.num_inp_serving_amount.value)
+            self.num_inp_protein.value, self.num_inp_fat.value, self.num_inp_carb.value,
+            self.num_inp_serving_amount.value)
         self.lbl_calories.text = f"Calories: {calculating_calories(self.num_inp_protein.value, self.num_inp_fat.value, self.num_inp_carb.value)}"
         self.lbl_calories.update()
 
@@ -206,31 +210,96 @@ class FactInputControl:
     """
 
     def __init__(self):
-        self.selected_category = ui.select(options=[], on_change=self.query_menu_based_upon_selected_category)
-        self.selected_menu = ui.select(options=[], on_change=self.query_menu_pfc)
-        self.quantity = ui.number(label="Quantity", value=1.0, on_change=self.calculating_calories_based_upon_quantity)
-        self.calories = ui.label(text="Calories: 0")
-        self.add_to_collection = ui.button("Add to Collection")
-        self.collections = ...
-        self.save_to_db = ui.button("Save to DB")
+        with ui.column() \
+                .props('autofocus outlined rounded item-aligned input-class="ml-3"') \
+                .classes('self-center transition-all'):
+            self.selected_category = ui.select(options=MENU_CATEGORY,
+                                               on_change=self.query_menu_based_upon_selected_category)
+            self.selected_menu = ui.select(options=[], on_change=self.query_menu_pfc)
+            self.quantity = ui.number(label="Quantity", value=1.0,
+                                      on_change=self.calculating_calories_based_upon_quantity)
+            self.calories = ui.label(text="Calories: 0")
+            self.add_to_collection = ui.button("Add to Collection", on_click=self.add_to_collection)
+            self.collections = ...
+            self.save_to_db = ui.button("Save to DB", on_click=self.save_to_db_fct)
+            self._calories = 0
+            self._micronutrients = ()
+            self.collection = ui.table(columns=collection_header, rows=[])
+            self._db_collection = []
 
     def query_menu_based_upon_selected_category(self) -> dict:
         """
         This method queries the menu db based on the selected category.
         :return: dictionary of the menu list
         """
-        ...
+        self.selected_menu.value = None
+        self.selected_menu.update()
+
+        filtered_data = select_filtered("dim_nutrition_menu", "id, menu_name", "menu_category",
+                                        self.selected_category.value)
+        x = updating_dict_options(filtered_data, "id", "menu_name")
+        self.selected_menu.options = x
+        self.selected_menu.update()
 
     def query_menu_pfc(self) -> tuple:
         """
         This method queries the menu pfc based on the selected menu.
         :return: tuple of the pfc
         """
-        ...
+        if self.selected_menu.value is None:
+            ...
+        else:
+            selected_menu_micronutrients = select_filtered("dim_nutrition_menu", "id, menu_name, protein, fat, \
+                                                                                 carbohydrate, \
+                                                                                 calories", "id",
+                                                           self.selected_menu.value)
+            print(selected_menu_micronutrients)
+            self._micronutrients = (selected_menu_micronutrients[0]['menu_name'],
+                                    selected_menu_micronutrients[0]['protein'],
+                                    selected_menu_micronutrients[0]['fat'],
+                                    selected_menu_micronutrients[0]['carbohydrate'],
+                                    selected_menu_micronutrients[0]['calories'],
+                                    )
+            print(self._micronutrients)
+            self.calories.text = f"Calories: {selected_menu_micronutrients[0]['calories']:.2f}"
+            self._calories = selected_menu_micronutrients[0]['calories']
+            self.calories.update()
 
     def calculating_calories_based_upon_quantity(self) -> float:
         """
         This method calculates the calories based on the quantity.
         :return: float
         """
-        ...
+        calories_text = float(self.quantity.value) * self._calories
+        self.calories.text = f"Calories: {calories_text:.2f}"
+        self.calories.update()
+
+    def add_to_collection(self):
+        fct_data = FctProduct(
+            menu_id=self.selected_menu.value,
+            quantity=self.quantity.value,
+        )
+        protein_data = self._micronutrients[1] * self.quantity.value
+        fat_data = self._micronutrients[2] * self.quantity.value
+        carb_data = self._micronutrients[3] * self.quantity.value
+        calories_data = self._micronutrients[4] * self.quantity.value
+
+        col = Collection(
+            menu_name=self._micronutrients[0],
+            quantity=self.quantity.value,
+            protein=f"{protein_data:.2f} {' ✅' if protein_data > 10 else ' 😅'}",
+            fat=f"{fat_data:.2f} {' ✅' if fat_data < 10 else ' ❌'}",
+            carb=f"{carb_data:.2f} {' ✅' if carb_data < 100 else ' 😅'}",
+            calories=f"{calories_data:.2f} {' ✅' if calories_data < 500 else ' ❌'}",
+        )
+        self.collection.rows.append(asdict(col))
+        self.collection.update()
+        self._db_collection.append(fct_data)
+
+    def save_to_db_fct(self):
+        # print(self._db_collection)
+        for r in self._db_collection:
+            insert_as_dict_supabase(FACT_PRODUCT_TABLE, r)
+
+        self.collection.rows.clear()
+        self.collection.update()
