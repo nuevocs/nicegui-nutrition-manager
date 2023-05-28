@@ -3,12 +3,11 @@ ARG VERSION
 
 LABEL maintainer="Tat <tat@seriousexplosion.net>"
 
-RUN python -m pip install nicegui
 
 #WORKDIR /
 WORKDIR /app
 #WORKDIR /nicegui_nutrition_manager/app
-#COPY nicegui_nutrition_manager /app/nicegui_nutrition_manager
+COPY nicegui_nutrition_manager /app/nicegui_nutrition_manager
 # Furthermore dependencies
 #COPY ./requirements.txt /requirements.txt
 #RUN pip install -r /requirements.txt
@@ -29,7 +28,7 @@ RUN apt-get update && \
     apt-get clean
 
 RUN curl -sSL https://install.python-poetry.org/ | python -
-RUN ls /app
+
 # packages install
 COPY pyproject.toml /pyproject.toml
 RUN poetry config virtualenvs.create false
