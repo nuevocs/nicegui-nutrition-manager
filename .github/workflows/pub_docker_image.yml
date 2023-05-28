@@ -21,9 +21,9 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v2
         with:
-          context: ./nicegui_small_dieting
+          context: ./nicegui_nutrition_manager
           push: true
-          tags: nuevocs/nicegui-small-dieting:latest
-          destination_container_repo: nuevocs/nicegui-small-dieting
+          tags: nuevocs/nicegui-nutrition-manager:latest
+          destination_container_repo: nuevocs/nicegui-nutrition-manager
           provider: dockerhub
           short_description: "my nicegui image"
