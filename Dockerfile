@@ -5,7 +5,6 @@ LABEL maintainer="Tat <tat@seriousexplosion.net>"
 
 WORKDIR /app
 COPY nicegui_nutrition_manager /app
-#COPY nicegui_nutrition_manager /app/nicegui_nutrition_manager
 
 ENV POETRY_HOME="/opt/poetry" \
     POETRY_VIRTUALENVS_CREATE=false \
@@ -32,4 +31,3 @@ RUN poetry run playwright install && playwright install-deps
 EXPOSE 8080
 
 CMD python3 main.py
-#CMD python3 nicegui_nutrition_manager/main.py

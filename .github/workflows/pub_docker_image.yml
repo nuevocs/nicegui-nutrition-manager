@@ -22,7 +22,6 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: .
-#          context: ./nicegui_nutrition_manager
           push: true
           tags: nuevocs/nicegui-nutrition-manager:latest
           destination_container_repo: nuevocs/nicegui-nutrition-manager

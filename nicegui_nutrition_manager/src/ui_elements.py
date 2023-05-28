@@ -176,8 +176,13 @@ class InputControl:
             carbohydrate=self.num_inp_carb.value,
             calories=calculating_calories(self.num_inp_protein.value, self.num_inp_fat.value, self.num_inp_carb.value),
         )
-        print(dim_item)
+        # print(dim_item)
         insert_as_dict_supabase(DIMENSIONAL_PRODUCT_TABLE, dim_item)
+        ui.notify("Saved to DB", type='positive', timeout=1000)
+        self.inp_manual_entry.value = ""
+        self.dpd_result_menu.options = []
+        self.dpd_result_menu.value = ""
+        self.dpd_result_menu.update()
         self.dialog.close()
 
     def scraping_menu_list_labels(self):
@@ -303,3 +308,4 @@ class FactInputControl:
 
         self.collection.rows.clear()
         self.collection.update()
+        ui.notify("Saved to DB", type='positive', timeout=1000)
