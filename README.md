@@ -19,3 +19,7 @@ This app will create two tables in a database: one for foods and one for meals. 
 ## Visuals
 ## Known Bugs
 ## Roadmap
+
+
+- Notification when a food is added in dim
+- Clear options in menu when SAVE to DB is clicked.

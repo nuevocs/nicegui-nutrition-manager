@@ -3,14 +3,9 @@ ARG VERSION
 
 LABEL maintainer="Tat <tat@seriousexplosion.net>"
 
-
-#WORKDIR /
 WORKDIR /app
-#WORKDIR /nicegui_nutrition_manager/app
-COPY nicegui_nutrition_manager /app/nicegui_nutrition_manager
-# Furthermore dependencies
-#COPY ./requirements.txt /requirements.txt
-#RUN pip install -r /requirements.txt
+COPY nicegui_nutrition_manager /app
+#COPY nicegui_nutrition_manager /app/nicegui_nutrition_manager
 
 ENV POETRY_HOME="/opt/poetry" \
     POETRY_VIRTUALENVS_CREATE=false \
@@ -31,11 +26,10 @@ RUN curl -sSL https://install.python-poetry.org/ | python -
 
 # packages install
 COPY pyproject.toml /pyproject.toml
-#RUN poetry config virtualenvs.create false
 RUN poetry install --no-root
-# RUN #poetry install --only main
 RUN poetry run playwright install && playwright install-deps
 
 EXPOSE 8080
 
-CMD python3 nicegui_nutrition_manager/main.py
+CMD python3 main.py
+#CMD python3 nicegui_nutrition_manager/main.py
