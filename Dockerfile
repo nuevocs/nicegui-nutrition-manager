@@ -33,7 +33,7 @@ RUN ls /app
 # packages install
 COPY pyproject.toml /pyproject.toml
 RUN poetry config virtualenvs.create false
-RUN poetry install
+RUN poetry install --no-root
 # RUN #poetry install --only main
 RUN poetry run playwright install
 
