@@ -5,8 +5,8 @@ LABEL maintainer="Tat <tat@seriousexplosion.net>"
 
 RUN python -m pip install nicegui
 
-WORKDIR /app
-#WORKDIR /nicegui_nutrition_manager/app
+#WORKDIR /app
+WORKDIR /nicegui_nutrition_manager/app
 
 # Furthermore dependencies
 #COPY ./requirements.txt /requirements.txt
