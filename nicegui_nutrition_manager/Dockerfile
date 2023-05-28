@@ -31,7 +31,7 @@ RUN curl -sSL https://install.python-poetry.org/ | python -
 
 
 # packages install
-COPY ./pyproject.toml /app/pyproject.toml
+COPY ../pyproject.toml /app/pyproject.toml
 RUN poetry install --only main
 RUN poetry run playwright install
 
