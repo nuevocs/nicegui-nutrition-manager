@@ -2,6 +2,8 @@ from dataclasses import dataclass
 import datetime
 
 jst_no_tz = datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None) + datetime.timedelta(hours=9)
+one_wk_jst_no_tz = datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None) - datetime.timedelta(weeks=1) \
+                   + datetime.timedelta(hours=9)
 
 
 @dataclass

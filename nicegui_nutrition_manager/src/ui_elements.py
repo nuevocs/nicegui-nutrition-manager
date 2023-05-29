@@ -2,10 +2,10 @@ from nicegui import ui
 from .playwright_scraping import get_search_result, get_nutrition_detail
 from .utils import extract_float_numbers, calculating_calories, MENU_CATEGORY, DIMENSIONAL_PRODUCT_TABLE, \
     updating_dict_options, collection_header, FACT_PRODUCT_TABLE
-from .db.schema_dtclass import DimProduct, FctProduct, Collection
-from .db.supabase_func import insert_as_dict_supabase, select_filtered
-
+from .db.schema_dtclass import DimProduct, FctProduct, Collection, jst_no_tz, one_wk_jst_no_tz
+from .db.supabase_func import insert_as_dict_supabase, select_filtered, select_all, select_filtered_gte
 from dataclasses import asdict
+import pandas as pd
 
 SITE_TITLE = "Nutrition Manager"
 new_line = '\n'
@@ -21,6 +21,30 @@ def page_layout_elements() -> None:
             ui.label('MENU').classes("text-xl text-gray-600/75 text-center")
             ui.link('Main', "/")
             ui.link('fact', "fact")
+            ui.link('data', "data")
+
+
+def nutrition_records_content() -> pd.DataFrame:
+    today = jst_no_tz.strftime('%Y-%m-%d')
+    one_week_prior = one_wk_jst_no_tz.strftime('%Y-%m-%d')
+
+    fct_data = select_filtered_gte("fct_nutrition_menu", "date, menu_id, quantity", "date", one_week_prior)
+    dim_data = select_all("dim_nutrition_menu", "id, menu_name, menu_category, protein, fat, carbohydrate, "
+                                                "calories")
+
+    fct_data = pd.DataFrame(fct_data)
+    dim_data = pd.DataFrame(dim_data)
+    df_merged = pd.merge(fct_data, dim_data, left_on='menu_id', right_on='id')
+    df_merged = df_merged.drop(['menu_id', 'id'], axis=1)
+    df_merged['protein'] = df_merged['protein'] * df_merged['quantity']
+    df_merged['fat'] = df_merged['fat'] * df_merged['quantity']
+    df_merged['carbohydrate'] = df_merged['carbohydrate'] * df_merged['quantity']
+    df_merged['calories'] = df_merged['calories'] * df_merged['quantity']
+
+    group_by = df_merged.drop(['quantity', 'menu_category'], axis=1)
+    group_by = group_by.groupby('date').sum(numeric_only=True)
+    return group_by
+    # print(group_by)
 
 
 class InputControl:
@@ -309,3 +333,27 @@ class FactInputControl:
         self.collection.rows.clear()
         self.collection.update()
         ui.notify("Saved to DB", type='positive', timeout=1000)
+
+
+class DataVisual:
+
+    def __init__(self, df: pd.DataFrame):
+        # self.df = None
+        self.chart_calories_by_date = ui.chart({
+            'title': False,
+            'chart': {'type': 'column'},
+            'xAxis': {'categories': df.index.tolist()},
+            'series': [
+                {'name': 'Calories', 'data': df["calories"].tolist()},
+            ],
+        }).classes('w-full h-64')
+        self.chart_pfc_by_date = ui.chart({
+            'title': False,
+            'chart': {'type': 'bar'},
+            'xAxis': {'categories': df.index.tolist()},
+            'series': [
+                {'name': 'Protein', 'data': df["protein"].tolist()},
+                {'name': 'Fat', 'data': df["fat"].tolist()},
+                {'name': 'Carb', 'data': df["carbohydrate"].tolist()},
+            ],
+        }).classes('w-full h-64')

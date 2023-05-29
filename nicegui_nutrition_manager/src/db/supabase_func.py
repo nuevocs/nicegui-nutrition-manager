@@ -43,5 +43,8 @@ def select_filtered(table_name: str, cols: str, filter_col: str, filter_value: s
     return data.data
 
 
-
-
+def select_filtered_gte(table_name: str, cols: str, filter_col: str, filter_value: str):
+    supabase = supabase_client()
+    data = supabase.table(table_name).select(cols).gte(filter_col, filter_value).execute()
+    assert len(data.data) > 0
+    return data.data
