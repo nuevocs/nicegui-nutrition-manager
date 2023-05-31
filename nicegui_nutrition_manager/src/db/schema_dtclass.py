@@ -1,9 +1,21 @@
 from dataclasses import dataclass
 import datetime
 
-jst_no_tz = datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None) + datetime.timedelta(hours=9)
-one_wk_jst_no_tz = datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None) - datetime.timedelta(weeks=1) \
-                   + datetime.timedelta(hours=9)
+
+def current_date_jst() -> str:
+    jst_no_tz = datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None) + datetime.timedelta(hours=9)
+    return jst_no_tz.strftime('%Y-%m-%d')
+
+
+def last_week_date_jst() -> str:
+    one_wk_jst_no_tz = datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None) - datetime.timedelta(weeks=1) \
+                       + datetime.timedelta(hours=9)
+    return one_wk_jst_no_tz.strftime('%Y-%m-%d')
+
+
+# jst_no_tz = datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None) + datetime.timedelta(hours=9)
+# one_wk_jst_no_tz = datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None) - datetime.timedelta(weeks=1) \
+#                    + datetime.timedelta(hours=9)
 
 
 @dataclass
@@ -15,14 +27,14 @@ class DimProduct:
     fat: float = 0
     carbohydrate: float = 0
     calories: float = 0
-    date: str = jst_no_tz.strftime('%Y-%m-%d')
+    date: str = current_date_jst()
 
 
 @dataclass
 class FctProduct:
     menu_id: int
     quantity: float
-    date: str = jst_no_tz.strftime('%Y-%m-%d')
+    date: str = current_date_jst()
 
 
 @dataclass

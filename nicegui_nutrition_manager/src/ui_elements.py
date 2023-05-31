@@ -2,7 +2,7 @@ from nicegui import ui
 from .playwright_scraping import get_search_result, get_nutrition_detail
 from .utils import extract_float_numbers, calculating_calories, MENU_CATEGORY, DIMENSIONAL_PRODUCT_TABLE, \
     updating_dict_options, collection_header, FACT_PRODUCT_TABLE
-from .db.schema_dtclass import DimProduct, FctProduct, Collection, jst_no_tz, one_wk_jst_no_tz
+from .db.schema_dtclass import DimProduct, FctProduct, Collection, current_date_jst, last_week_date_jst
 from .db.supabase_func import insert_as_dict_supabase, select_filtered, select_all, select_filtered_gte
 from dataclasses import asdict
 import pandas as pd
@@ -25,8 +25,8 @@ def page_layout_elements() -> None:
 
 
 def nutrition_records_content() -> pd.DataFrame:
-    today = jst_no_tz.strftime('%Y-%m-%d')
-    one_week_prior = one_wk_jst_no_tz.strftime('%Y-%m-%d')
+    today = current_date_jst()
+    one_week_prior = last_week_date_jst()
 
     fct_data = select_filtered_gte("fct_nutrition_menu", "date, menu_id, quantity", "date", one_week_prior)
     dim_data = select_all("dim_nutrition_menu", "id, menu_name, menu_category, protein, fat, carbohydrate, "
@@ -307,7 +307,7 @@ class FactInputControl:
         fct_data = FctProduct(
             menu_id=self.selected_menu.value,
             quantity=self.quantity.value,
-            date=jst_no_tz.strftime('%Y-%m-%d'),
+            # date=jst_no_tz.strftime('%Y-%m-%d'),
         )
         protein_data = self._micronutrients[1] * self.quantity.value
         fat_data = self._micronutrients[2] * self.quantity.value
