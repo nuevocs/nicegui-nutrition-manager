@@ -22,7 +22,6 @@ class DimProduct:
 class FctProduct:
     menu_id: int
     quantity: float
-    # menu_name: str
     date: str = jst_no_tz.strftime('%Y-%m-%d')
 
 
