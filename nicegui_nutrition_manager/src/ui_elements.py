@@ -304,11 +304,14 @@ class FactInputControl:
         self.calories.update()
 
     def add_to_collection(self):
+
         fct_data = FctProduct(
             menu_id=self.selected_menu.value,
             quantity=self.quantity.value,
-            # date=jst_no_tz.strftime('%Y-%m-%d'),
+            date=current_date_jst(),
         )
+        print(fct_data)
+
         protein_data = self._micronutrients[1] * self.quantity.value
         fat_data = self._micronutrients[2] * self.quantity.value
         carb_data = self._micronutrients[3] * self.quantity.value
